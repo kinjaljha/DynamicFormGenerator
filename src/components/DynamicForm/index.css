@@ -1,0 +1,7 @@
+.box-component{
+    border: 5px solid red;
+}
+.dropdown-component{
+    padding: 20px;
+    margin: 10px;
+}
