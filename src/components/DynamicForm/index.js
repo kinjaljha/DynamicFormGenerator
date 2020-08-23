@@ -73,15 +73,24 @@ const DynamicForm = (props) => {
       return acc;
     }, []);
 
-    obj[event.currentTarget.name] = event.currentTarget.value;
+    let local_component_array = JSON.parse(JSON.stringify(props.postSchema));
+
+    let component_obj_map = {};
+    component_obj_map.key = `${local_component_array.length}`;
+    component_obj_map.option_selected = 'static';
+
+    // let obj = {};
     obj.placeholder = 'default';
     obj.name = 'default';
-    obj.input_type = event.currentTarget.value;
+    obj.input_type = 'static';
     obj.required = 'required';
-    if (element === 'dropdown') obj.values = ['dum1', 'dum2'];
+    if(element === 'dropdown') obj.values = ["dum1", "dum2"];
+    obj[event.currentTarget.name] = event.currentTarget.value;
 
-    localSchema.push(obj);
-    props.onCreateSchema(localSchema);
+    component_obj_map.component = obj;
+
+    local_component_array.push(component_obj_map);
+    props.onCreateSchema(local_component_array);
   };
 
   const onAddComponent = (event) => {
@@ -112,7 +121,7 @@ const DynamicForm = (props) => {
 
   return (
     <form onSubmit={submitForm}>
-      {props.postSchema.map((data, index) => {
+      {props.postSchema && props.postSchema.map((data, index) => {
         return (
           <div class='box-component'>
             <div class='dropdown-component'>
@@ -121,7 +130,7 @@ const DynamicForm = (props) => {
                 name='component type'
                 required={true}
                 placeholder='component type'
-                handleChange={(e, comp_index) => onComponentChange(e, comp_index)}
+                handleChange={(e, index) => onComponentChange(e, index)}
                 val={['static', 'text', 'dropdown', 'radio']}
               />
             </div>
