@@ -1,7 +1,9 @@
 import React from "react";
+import "./index.css";
 
-const InputTextField = ({name, required, handleChange}) => (
-    <div>
+const InputTextField = ({name, required, charCount, setCharCount, handleChange}) => (
+    <div class="text-container">
+        <div class="input-container">
         <input 
             type="text"
             name={name}
@@ -9,6 +11,17 @@ const InputTextField = ({name, required, handleChange}) => (
             autoComplete="off"
             onChange={handleChange}
         />
+        </div>
+        <div className="allowed-container">
+        <label>Allowed Characters</label>
+        <input 
+            type="number"
+            name={charCount}
+            required={true}
+            autoComplete="off"
+            onChange={setCharCount}
+        />
+        </div>
     </div>
 )
 

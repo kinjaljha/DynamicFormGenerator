@@ -1,0 +1,39 @@
+.select-box{
+    position: relative;
+    width: 100px;
+    height: 40px;
+  }
+  input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    /* border: 1px solid #ccc; */
+    border: 1px solid red;
+
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  input[type=number], select {
+    width: 60%;
+    padding: 6px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    /* border: 1px solid #ccc; */
+    border: 1px solid red;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  .text-container{
+    position: relative;
+  }
+  .allowed-container{
+    width: 200px;
+      flex-direction: row;
+  }
+  .input-container{
+    max-width: 100%;
+  }
+
+
+  
