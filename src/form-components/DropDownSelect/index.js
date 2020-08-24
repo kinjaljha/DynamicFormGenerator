@@ -1,11 +1,10 @@
 import React from 'react';
 import "./index.css";
 
-const DropDownSelect = ({ name, required, val, handleChange, optionText, setCurrOptionText, addDropdownOptions }) => (
+const DropDownSelect = ({ name, required, val, handleChange, optionCurrText, setCurrOptionText, addDropdownOptions }) => (
   <div>
     <div class="custom-select">
     <select className="select-box" name={name} value={name} required={required} onChange={handleChange}>
-      {/* <option value=''>Select an option</option> */}
       {val.map((values) => (
         <option value={values} key={values}>
           {values}
@@ -18,15 +17,17 @@ const DropDownSelect = ({ name, required, val, handleChange, optionText, setCurr
         <div>     
       <input 
         type="text"
-        name={optionText}
+        name={optionCurrText}
+        value={optionCurrText}
         required={true}
         autoComplete="off"
         onChange={(e)=>setCurrOptionText(e.currentTarget.value)}
     />
-    <button onClick={(e) => addDropdownOptions(e)}>Add Options</button>
+    <button className='add add1' onClick={(e) => addDropdownOptions(e)}>Add Options</button>
     </div>)}
 
   </div>
 );
 
 export default DropDownSelect;
+

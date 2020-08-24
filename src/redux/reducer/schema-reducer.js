@@ -2,11 +2,7 @@ import * as actionTypes from '../action/actionTypes';
 import { updateObject } from '../utility';
 
 const initState = {
-  postSchema: [
-    // { placeholder: 'Enter Name', name: 'remaining values', input_type: "static", required: true},
-    // { placeholder: 'Enter Email', name: 'email', input_type: "text", required: true},
-    // { placeholder: 'Dropdown', name: 'name', input_type: "dropdown", required: true, values: ["one", "two", ]}
-  ]
+  postSchema: []
 };
 
 export const onCreateData = (state, action) => {

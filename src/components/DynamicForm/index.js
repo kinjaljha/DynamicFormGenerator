@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createSchema } from '../../redux/action/schema-action';
 import './index.css';
 import { connect } from 'react-redux';
+import {deepCopy} from '../../helpers';
 
 import InputTextField from '../../form-components/InputTextField';
 import TextAreaField from '../../form-components/TextAreaField';
@@ -22,170 +23,179 @@ const DynamicForm = (props) => {
   const [currRadioText, setCurrRadioText] = useState('');
   const [optionCurrText, setCurrOptionText] = useState('');
 
+  
   const submitForm = (event) => {
     const { postSchema, ...inputFields } = props;
-
     console.log(inputFields);
-
     event.preventDefault();
+    //Submit logic
+  };
+  
+
+  const addRadioOptions = (event, index) => {
+
+    let localSchema = deepCopy(props.postSchema);
+    let idx = index.toString();
+    localSchema = localSchema.reduce((acc, data) => {
+      let component = deepCopy(data.component);
+      if (data.key === idx) {
+        component.radios.push(currRadioText);
+      }
+      data.component = component;
+      acc.push(data);
+      return acc;
+    }, []);
+    props.onCreateSchema(localSchema);
+    setCurrRadioText('');
   };
 
-  const addRadios = (event, index) => {
-    let localSchema = JSON.parse(JSON.stringify(props.postSchema));
-    let idx = index.toString();
-    localSchema = localSchema.reduce((acc, data) => {
-      let comp_obj = {};
-      if (data.key === idx) {
-        console.log('Pushing radio', index);
-        comp_obj = JSON.parse(JSON.stringify(data.component));
-        // let current = event.target.value;
-        comp_obj.radios.push(currRadioText);
-        console.log('comp_obj.radios', comp_obj.radios);
-      } else {
-        comp_obj = JSON.parse(JSON.stringify(data.component));
-      }
-      data.component = comp_obj;
-      acc.push(data);
-      return acc;
-    }, []);
-    setCurrRadioText('');
-    props.onCreateSchema(localSchema);
-  };
+  // TODO: Can be optimised by generalising this with above function
   const addDropdownOptions = (event, index) => {
-    let localSchema = JSON.parse(JSON.stringify(props.postSchema));
+    let localSchema = deepCopy(props.postSchema);
     let idx = index.toString();
     localSchema = localSchema.reduce((acc, data) => {
-      let comp_obj = {};
+      let component = deepCopy(data.component);
       if (data.key === idx) {
-        // console.log("Pushing option", index);
-        comp_obj = JSON.parse(JSON.stringify(data.component));
-        comp_obj.values.push(optionCurrText);
-      } else {
-        comp_obj = JSON.parse(JSON.stringify(data.component));
+        component.values.push(optionCurrText);
       }
-      data.component = comp_obj;
+      data.component = component;
       acc.push(data);
       return acc;
     }, []);
     props.onCreateSchema(localSchema);
+    setCurrOptionText('');
   };
-  const handleClick = (event, index, name, input_type, required, radios, selectedRadio) => {
-    let localSchema = JSON.parse(JSON.stringify(props.postSchema));
+
+
+  const handleRadio = (event, index, name, inputType, required, radios, selectedRadio, radioText) => {
+    let localSchema = deepCopy(props.postSchema);
     localSchema = localSchema.reduce((acc, data) => {
-      let obj;
-      if (data.key === index.toString()) {
-        obj = JSON.parse(JSON.stringify(data.component));
-        obj.selectedRadio = obj.radios[event.currentTarget.value];
-        obj.input_type = input_type;
-        obj.required = required;
-        if (radios) obj.radios = radios;
-      } else {
-        obj = JSON.parse(JSON.stringify(data.components));
+      let component = deepCopy(data.component);
+      let idx = index.toString();
+      if (data.key === idx) {
+        component.selectedRadio = component.radios[event.currentTarget.value];
+        component.input_type = inputType;
+        component.required = required;
+        component.radioText = radioText;
+        if (radios) component.radios = radios;
       }
-      data.component = obj;
+      data.component = component;
       acc.push(data);
       return acc;
     }, []);
     props.onCreateSchema(localSchema);
   };
+
 
   const handleCharCount = (event, index) => {
-    let localSchema = JSON.parse(JSON.stringify(props.postSchema));
+    let localSchema = deepCopy(props.postSchema);
     localSchema = localSchema.reduce((acc, data) => {
-      let obj = JSON.parse(JSON.stringify(data.component));
-      if (data.key === index.toString()) {
-        obj.charCount = event.currentTarget.value;
+      let component = deepCopy(data.component);
+      let idx = index.toString();
+      if (data.key === idx) {
+        component.charCount = event.currentTarget.value;
       }
-      data.component = obj;
+      data.component = component;
       acc.push(data);
       return acc;
     }, []);
     props.onCreateSchema(localSchema);
   };
 
-  const handleChange = (event, index, name, input_type, required, values) => {
-    let localSchema = JSON.parse(JSON.stringify(props.postSchema));
+
+  const handleRadioQuestion = (event, index) => {
+    let localSchema = deepCopy(props.postSchema);
     localSchema = localSchema.reduce((acc, data) => {
-      let obj = JSON.parse(JSON.stringify(data.component));
-      if (data.key === index.toString()) {
-        obj.name = event.currentTarget.value;
-        obj.input_type = input_type;
-        obj.required = required;
-        if (values) obj.values = values;
+      let component = deepCopy(data.component);
+      let idx = index.toString();
+      if (data.key === idx) {
+        component.radioText = event.currentTarget.value;
       }
-      data.component = obj;
+      data.component = component;
       acc.push(data);
       return acc;
     }, []);
     props.onCreateSchema(localSchema);
   };
+
+
+  const handleChange = (event, index, name, input_type, required, values) => {
+    let localSchema = deepCopy(props.postSchema);
+    localSchema = localSchema.reduce((acc, data) => {
+      let component = deepCopy(data.component);
+      let idx = index.toString();
+      if (data.key === idx) {
+        component.name = event.currentTarget.value;
+        component.input_type = input_type;
+        component.required = required;
+        if (values) component.values = values;
+      }
+      data.component = component;
+      acc.push(data);
+      return acc;
+    }, []);
+    props.onCreateSchema(localSchema);
+  };
+
 
   const onComponentChange = (event, index) => {
     let idx = index.toString();
-    let localSchema = JSON.parse(JSON.stringify(props.postSchema));
+    let localSchema = deepCopy(props.postSchema);
     localSchema = localSchema.reduce((acc, data) => {
-      let comp_obj = {};
+      let component = deepCopy(data.component);
       if (data.key === idx) {
-        comp_obj = JSON.parse(JSON.stringify(data.component));
-
-        comp_obj.name = 'default';
-        comp_obj.input_type = event.currentTarget.value;
-        comp_obj.required = true;
+        component.name = 'default';
+        component.input_type = event.currentTarget.value;
+        component.required = true;
         if (event.currentTarget.value === 'text') {
-          comp_obj.charCount = 0;
+          component.charCount = 0;
         }
-
         if (event.currentTarget.value === 'dropdown') {
-          comp_obj.values = [];
-          comp_obj.name = comp_obj.values[0];
+          component.values = [];
+          component.name = component.values[0];
         }
         if (event.currentTarget.value === 'radio') {
-          comp_obj.radios = [];
-          comp_obj.selectedRadio = comp_obj.radios[0];
+          component.radios = [];
+          component.selectedRadio = component.radios[0];
+          component.radioText = '';
         }
-        // comp_obj[event.currentTarget.name] = event.currentTarget.value;
-      } else {
-        comp_obj = JSON.parse(JSON.stringify(data.component));
       }
-      data.component = comp_obj;
+      data.component = component;
       acc.push(data);
       return acc;
     }, []);
-
     props.onCreateSchema(localSchema);
   };
 
+
   const onAddComponent = (event) => {
-    let local_component_array = JSON.parse(JSON.stringify(props.postSchema));
-
-    let component_obj_map = {};
-    component_obj_map.key = `${local_component_array.length}`;
-    // component_obj_map.option_selected = 'static';
-
+    let component = deepCopy(props.postSchema);
+    let component_map = {};
+    component_map.key = `${component.length}`;
     let obj = {};
     obj.name = 'default name';
     obj.input_type = 'static';
     obj.required = true;
-    component_obj_map.component = obj;
-
-    local_component_array.push(component_obj_map);
-    props.onCreateSchema(local_component_array);
+    component_map.component = obj;
+    component.push(component_map);
+    props.onCreateSchema(component);
   };
+
 
   const removeComponent = (event, index) => {
     let idx = index.toString();
-    let local_component_array = JSON.parse(JSON.stringify(props.postSchema));
-    const filtered = local_component_array.filter((obj) => obj.key !== idx);
+    let component = deepCopy(props.postSchema);
+    const filtered = component.filter((obj) => obj.key !== idx);
     for (let i = 0; i < filtered.length; i++) {
       filtered[i].key = i.toString();
     }
     props.onCreateSchema(filtered);
   };
 
+
   return (
     <form onSubmit={submitForm}>
       {props.postSchema.map((data, index) => {
-		// setCharCount(data.component.charCount);
         return (
           <div key={index} className='box-container'>
             <div className='dropdown-container'>
@@ -201,7 +211,6 @@ const DynamicForm = (props) => {
             <div class="child-form-container">
               {data.component.input_type === 'text' && data.key === index.toString() ? (
                 <InputTextField
-                  //   key={data.placeholder}
                   key={index}
                   name={data.component.name}
                   required={data.component.required}
@@ -234,37 +243,35 @@ const DynamicForm = (props) => {
                 />
               ) : null}
               {data.component.input_type === 'radio' && data.key === index.toString() ? (
-                // name, required, placeholder, handleRadio, radios, selectedRadio
                 <RadioGroup
                   key={index}
                   name={data.component.name}
                   required={data.component.required}
                   handleRadio={(e) =>
-                    handleClick(
+                    handleRadio(
                       e,
                       index,
                       data.component.name,
                       data.component.input_type,
                       data.component.required,
                       data.component.radios,
-                      data.component.selectedRadio
+                      data.component.selectedRadio,
+                      data.component.radioText
                     )
                   }
                   radios={data.component.radios}
                   selectedRadio={data.component.selectedRadio}
-                  // addRadios={(e)=>addRadios(e, index)}
                   radioText={currRadioText}
-                  addRadios={(e) => addRadios(e, index)}
+                  addRadioOptions={(e) => addRadioOptions(e, index)}
                   setCurrRadioText={setCurrRadioText}
+                  radioQuestion={data.component.radioText}
+                  setRadioQuestion={(e)=>handleRadioQuestion(e,index)}
                 />
               ) : null}
             </div>
             <div className="delete-btn-holder">
             <button class="delete-btn" type='button' title='Remove Component' onClick={(e) => removeComponent(e, index)}><i class="fa fa-trash"></i></button>
             </div>
-            {/* <button type='button' title='Remove Component' onClick={(e) => removeComponent(e, index)}>
-              remove
-            </button> */}
           </div>
         );
       })}
@@ -272,7 +279,7 @@ const DynamicForm = (props) => {
         <button className='button button1' onClick={(e) => onAddComponent(e)}>
           Add Component
         </button>
-        <button className='button button2' onClick={() => downloadObjectAsJson(props.postSchema, 'schema')}>
+        <button disabled={!props.postSchema.length} className='button button2' onClick={() => downloadObjectAsJson(props.postSchema, 'schema')}>
           Download JSON
         </button>
       </div>

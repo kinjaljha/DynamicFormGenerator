@@ -10,6 +10,7 @@ const InputTextField = ({name, required, charCount, setCharCount, handleChange})
             required={required}
             autoComplete="off"
             onChange={handleChange}
+            maxLength={charCount}
         />
         </div>
         <div className="allowed-container">
